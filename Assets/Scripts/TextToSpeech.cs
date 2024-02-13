@@ -19,7 +19,7 @@ public class TextToSpeech : MonoBehaviour
     // Start is called before the first frame update
     public async Task T2SResponse()
     {
-        var credentials = new BasicAWSCredentials("AKIA2UH6HQ3CZZYQA6AZ", "5ic1cbU6APbIfjaNM7EQn+Ics6QUOJ1S7+uhNELp");
+        var credentials = new BasicAWSCredentials("AKIA2UH6HQ3CWJFMY3ME", "5comNcoI+dt+NtRgbPKSQ2vgeWcxvqSbCO5i7n5X");
         var client = new AmazonPollyClient(credentials,Amazon.RegionEndpoint.EUCentral1);
 
         var request = new SynthesizeSpeechRequest()
