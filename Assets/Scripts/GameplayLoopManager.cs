@@ -60,7 +60,7 @@ public class GameplayLoopManager : MonoBehaviour
     private HandContrDistanceTracking handContrDistanceTracking;
 
     private float loudness;
-    private int round = 8;
+    private int round = 1;
 
     //Gets and instantiates all the needed Components and Gameobjects / Scripts in the variables
     void Start()
