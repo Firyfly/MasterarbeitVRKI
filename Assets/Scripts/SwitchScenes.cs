@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//-----------------------------------------
+//Switches the Scene to what is set in editor
+//-----------------------------------------
+
 public class SwitchScenes : MonoBehaviour
 {
 
@@ -18,7 +22,7 @@ public class SwitchScenes : MonoBehaviour
     [SerializeField]
     private SwitchSceneSelection SwitchScenesSelected = SwitchSceneSelection.MainMenu;
 
-
+    //Changes scene to the chose one in the editor
     public void ChangeScene()
     {
         switch(SwitchScenesSelected)

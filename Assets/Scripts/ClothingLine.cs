@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Script not in use, was originally designed to create a clothingline in the not in the Gameloop included and discontinued Home scene
+//-----------------------------------------
+
 public class ClothingLine : MonoBehaviour
 {
 
     [SerializeField]
     private List<GameObject> ClothingGameobjects;
-
     private List<GameObject> InstantiatedObjects = new List<GameObject>();
-
     int clothingLinePosArticle = 0;
 
     // Start is called before the first frame update
@@ -29,13 +31,9 @@ public class ClothingLine : MonoBehaviour
                 {
                     InstantiatedObjects[i].gameObject.SetActive(false);
                 }
-
             }
         }
-
     }
-
-
 
     public void SwitchRight()
     {
@@ -47,7 +45,6 @@ public class ClothingLine : MonoBehaviour
 
             for (int i = 0; i < InstantiatedObjects.Count; i++)
             { 
-
                 Vector3 oldPosition = InstantiatedObjects[i].transform.position;
                 Vector3 newPosition = InstantiatedObjects[i].transform.position;
                 newPosition.z -= 1;
@@ -55,7 +52,6 @@ public class ClothingLine : MonoBehaviour
                 while (timer <= 1)
                 {
                     timer += 0.01f*Time.deltaTime;
-
                     InstantiatedObjects[i].transform.position = Vector3.Lerp(oldPosition,newPosition,timer);
                 }
 
@@ -75,20 +71,12 @@ public class ClothingLine : MonoBehaviour
                 {
                     InstantiatedObjects[i].gameObject.SetActive(false);
                 }
-
-
             }
-
-
-
-
-
         }
     }
 
     public void SwitchLeft()
     {
-
         if (clothingLinePosArticle != 0)
         {
             float timer = 0;
@@ -103,7 +91,6 @@ public class ClothingLine : MonoBehaviour
                 while (timer <= 1)
                 {
                     timer += 0.01f*Time.deltaTime;
-
                     InstantiatedObjects[i].transform.position = Vector3.Lerp(oldPosition, newPosition, timer);
                 }
 
@@ -123,13 +110,8 @@ public class ClothingLine : MonoBehaviour
                 {
                     InstantiatedObjects[i].gameObject.SetActive(false);
                 }
-
-
             }
-
-
         }
     }
-
 
 }

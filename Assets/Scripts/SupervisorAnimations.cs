@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.Animations;
+
+//-----------------------------------------
+//Animations for the supervisor, controlling the animator
+//-----------------------------------------
 
 public class SupervisorAnimations : MonoBehaviour
 {
@@ -30,16 +33,14 @@ public class SupervisorAnimations : MonoBehaviour
     private bool isThumbsUp = false;
     private bool isClapping = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private GameObject mouthMoverObject;
 
     // Update is called once per frame
     void Update()
     {
-
+        //if nothing else is done, count down timer and play idle animation
+        mouthMoverObject.GetComponent<MouthMover>().isTalking = isTalking;
         if (!armRubbing && !isTalking && !isPointingFinger && !isDisapproval && !isThumbsUp && !isClapping)  //Default Idle Animations when nothing else is happening
         {
             if (idleSittingTimer > 0.0f)
@@ -120,7 +121,7 @@ public class SupervisorAnimations : MonoBehaviour
 
     }
 
-
+    //get random idle animation
     private void RandomIdleAnimation()
     {
         int rand = Random.Range(1,11);
@@ -157,6 +158,7 @@ public class SupervisorAnimations : MonoBehaviour
 
     }
 
+    //get random talking animation
     private void StartTalking()
     {
         int rand = Random.Range(1, 10);

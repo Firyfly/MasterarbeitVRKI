@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Activates the Scenegeneration in the DontDestroyOnLoad Object
+//-----------------------------------------
+
 public class ActivateSceneGeneration : MonoBehaviour
 {
-    // Start is called before the first frame update
+
     void Start()
     {
         GameObject.Find("FeedbackGenerator").GetComponent<FeedbackCreationAndGeneration>().GenerateFeedback();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

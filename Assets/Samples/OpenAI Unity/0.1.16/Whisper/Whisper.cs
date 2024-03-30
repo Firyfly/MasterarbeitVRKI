@@ -11,22 +11,35 @@ namespace OpenAI
         [SerializeField] private Dropdown dropdown;
         
         private readonly string fileName = "output.wav";
-        private readonly int duration = 60;
+        private int duration = 60;
         
         private AudioClip clip;
         private bool isRecording;
         private float time;
-        private OpenAIApi openai = new OpenAIApi();
+        private OpenAIApi openai = new OpenAIApi("YourApiKey", "YourOrganizationID");
 
 
         [SerializeField]
         GameObject GameplayLoopManagerGameobject;
         GameplayLoopManager gameplayLoopManager;
 
+        [SerializeField]
+        private Slider timerSlider;
 
+        private float automaticStopTimer = 5.0f;
+        private float playerPrefsTimer;
+        private float beginningLeasureTimer = 2.0f;
 
         private void Start()
         {
+            //ChangeMicrophone(0);
+
+            duration = PlayerPrefs.GetInt("MicRecLength");
+            if(PlayerPrefs.GetInt("ShowTimer") == 0)
+            {
+                timerSlider.gameObject.SetActive(false);
+            }
+
             gameplayLoopManager = GameplayLoopManagerGameobject.GetComponent<GameplayLoopManager>();
 
             #if UNITY_WEBGL && !UNITY_EDITOR
@@ -53,6 +66,8 @@ namespace OpenAI
         {
             isRecording = true;
             recordButton.enabled = false;
+            playerPrefsTimer = PlayerPrefs.GetInt("MicRecLength");
+            timerSlider.value = 1;
 
             var index = PlayerPrefs.GetInt("user-mic-device-index");
             
@@ -68,9 +83,13 @@ namespace OpenAI
                 isRecording = false;
                 message.text = "Transcripting...";
 
+                playerPrefsTimer = PlayerPrefs.GetInt("MicRecLength");
+                timerSlider.value = 1;
+
 #if !UNITY_WEBGL
                 Microphone.End(null);
 #endif
+                
 
                 byte[] data = SaveWav.Save(fileName, clip);
 
@@ -96,18 +115,58 @@ namespace OpenAI
 
         private void Update()
         {
-            //if (isRecording)
-            //{
-            //    time += Time.deltaTime;
-            //    progressBar.fillAmount = time / duration;
+            if (isRecording)
+            {
+                int dec = 28;
+                float[] waveData = new float[dec];
+                int micPos = Microphone.GetPosition(null) - (dec + 1);
+                if (micPos < 0) return;
+                clip.GetData(waveData, micPos);
+
+                float levelMax = 0;
+                for (int i = 0; i < dec; i++)
+                {
+                    float wavePeak = waveData[i] * waveData[i];
+                    if (levelMax < wavePeak)
+                    {
+                        levelMax = wavePeak;
+                    }
+                }
+
+                if(beginningLeasureTimer >= 0.0f)
+                {
+                    beginningLeasureTimer -= Time.deltaTime * 1;
+                }
                 
-            //    if (time >= duration)
-            //    {
-            //        time = 0;
-            //        isRecording = false;
-            //        EndRecording();
-            //    }
-            //}
+                if(levelMax <= 0.0002 && beginningLeasureTimer <= 0.0f)
+                {
+                    automaticStopTimer -= Time.deltaTime * 1;
+                }
+                else
+                {
+                    automaticStopTimer = 5.0f;
+                }
+
+                if (automaticStopTimer < 0.0f)
+                {
+                    EndRecording();
+                }
+
+                if(playerPrefsTimer >= 0.0f)
+                {
+                    playerPrefsTimer -= Time.deltaTime * 1;
+                    timerSlider.value = Mathf.InverseLerp(0,PlayerPrefs.GetInt("MicRecLength"), playerPrefsTimer);
+                }
+                else
+                {
+                    EndRecording();
+                }
+
+            }
+
+
+
+
         }
     }
 }

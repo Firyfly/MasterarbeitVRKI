@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Movement for the Avatars outside the office
+//-----------------------------------------
+
 public class OutsideCharacterWalking : MonoBehaviour
 {
-
-    //[SerializeField]
-    //private Animator animator;
 
     enum Direction{
         x,
@@ -27,8 +28,7 @@ public class OutsideCharacterWalking : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //animator.SetBool("isWalking", true);
-
+        //Sets the start position
         if (walkingDirection == Direction.x)
         {
             startingPos = this.gameObject.transform.position.x;
@@ -37,11 +37,9 @@ public class OutsideCharacterWalking : MonoBehaviour
         {
             startingPos = this.gameObject.transform.position.z;
         }
-
-
     }
 
-    // Update is called once per frame
+    //Walks depending on the direction
     void Update()
     {
         if (walkingDirection == Direction.x)
@@ -53,6 +51,8 @@ public class OutsideCharacterWalking : MonoBehaviour
             WalkingZ();
         }
     }
+
+    //Walking in the z direction
     private void WalkingZ()
     {
         if (!walkingBack)
@@ -79,6 +79,7 @@ public class OutsideCharacterWalking : MonoBehaviour
         }
     }
 
+    //Walking in the x direction
     private void WalkingX()
     {
         if (!walkingBack)
@@ -104,4 +105,5 @@ public class OutsideCharacterWalking : MonoBehaviour
             }
         }
     }
+
 }

@@ -1,7 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 namespace UnityEngine.XR.Hands{
+
+    //-----------------------------------------
+    //Reads the ChatGPT feedback in the feedback scene
+    //-----------------------------------------
 
     public class SetCalibration : MonoBehaviour
     {
@@ -9,27 +15,21 @@ namespace UnityEngine.XR.Hands{
         private GameObject SceneManager;
         float pinchTimer = 5.0f;
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            
-        }
+        [SerializeField]
+        private Image radialIndicatorLeft;
+        [SerializeField]
+        private Image radialIndicatorRight;
 
         // Update is called once per frame
         void Update()
         {
-            //bool test = Hands.MetaAimHand.right.indexPressed.isPressed;
-            //Debug.Log(test);
-            //float test2 = Hands.MetaAimHand.right.pinchStrengthIndex.ReadValue();
-            //Debug.Log(test2);
-
+            //if left is pinched, start timer and set distance
             if(MetaAimHand.left.indexPressed.isPressed && MetaAimHand.left.pinchStrengthIndex.ReadValue() >= 0.8)
             {
-                
                 if(pinchTimer >= 0)
                 {
                     pinchTimer -= Time.deltaTime * 1.0f;
-                    Debug.Log("pinchTimer: " + pinchTimer);
+                    radialIndicatorLeft.fillAmount = 1 - (pinchTimer / 5.0f) ;
                 }
                 else
                 {
@@ -38,19 +38,19 @@ namespace UnityEngine.XR.Hands{
                     GameObject Camera = GameObject.Find("Main Camera");
 
                     float distance = Vector3.Distance(LeftWrist.transform.position, Camera.transform.position);
-                    //TODO: SetPlayerPrefs
+                    //Set PlayerPrefs
                     PlayerPrefs.SetFloat("CalibrationDistance", distance);
-                    Debug.Log(distance);
 
                     SceneManager.GetComponent<SwitchScenes>().ChangeScene();
                 }
             }
-            else if(MetaAimHand.right.indexPressed.isPressed == true && MetaAimHand.right.pinchStrengthIndex.ReadValue() >= 0.8)
+            //if right is pinched, start timer and set distance
+            else if (MetaAimHand.right.indexPressed.isPressed == true && MetaAimHand.right.pinchStrengthIndex.ReadValue() >= 0.8)
             {
                 if (pinchTimer >= 0)
                 {
                     pinchTimer -= Time.deltaTime * 1.0f;
-                    Debug.Log("pinchTimer: " + pinchTimer);
+                    radialIndicatorRight.fillAmount = 1 - (pinchTimer / 5.0f);
                 }
                 else
                 {
@@ -59,16 +59,18 @@ namespace UnityEngine.XR.Hands{
                     GameObject Camera = GameObject.Find("Main Camera");
 
                     float distance = Vector3.Distance(RightWrist.transform.position, Camera.transform.position);
-                    //TODO: SetPlayerPrefs
+                    //SetPlayerPrefs
                     PlayerPrefs.SetFloat("CalibrationDistance", distance);
-                    Debug.Log(distance);
 
                     SceneManager.GetComponent<SwitchScenes>().ChangeScene();
                 }
             }
+            //reset timer if nothing pressed
             else
             {
                 pinchTimer = 5.0f;
+                radialIndicatorLeft.fillAmount = 0;
+                radialIndicatorRight.fillAmount = 0;
             }
 
 

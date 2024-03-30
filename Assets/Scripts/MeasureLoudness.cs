@@ -2,20 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Tracks the distance which the hands are moving
+//-----------------------------------------
+
 public class MeasureLoudness : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //gets the loudness from the audio clip 
     public float GetLoudnessFromAudioClip(AudioClip clip)
     {
 
@@ -29,7 +23,6 @@ public class MeasureLoudness : MonoBehaviour
             totalLoudness += Mathf.Abs(waveData[i]);
         }
 
-        Debug.Log(totalLoudness / clip.samples);
         return totalLoudness / clip.samples;
     }
 

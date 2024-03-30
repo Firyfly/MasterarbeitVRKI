@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//-----------------------------------------
+//Sets the Hand Tracking or Controller in the main menu
+//-----------------------------------------
+
 public class SetHandtrackingOrController : MonoBehaviour
 {
 
@@ -12,35 +16,26 @@ public class SetHandtrackingOrController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Set the toggle button on the start of the scene
         if (PlayerPrefs.GetInt("IsHandtracking") == 1)
         {
             ToggleGameobject.GetComponent<Toggle>().isOn = true;
-            Debug.Log("is true");
         }
         else
         {
-            ToggleGameobject.GetComponent<Toggle>().isOn = false;
-            Debug.Log("is false");
+            ToggleGameobject.GetComponent<Toggle>().isOn = false; 
         }
-
-        Debug.Log(ToggleGameobject.GetComponent<Toggle>().isOn);
     }
 
     public void ToggleActivated()
     {
-        Debug.Log(ToggleGameobject.GetComponent<Toggle>().isOn);
         if (ToggleGameobject.GetComponent<Toggle>().isOn == false)
-        {
-            Debug.Log("Set false");
+        {   
             PlayerPrefs.SetInt("IsHandtracking", 0);
-            //ToggleGameobject.GetComponent<Toggle>().isOn = false;
         }
         else
-        {
-            Debug.Log("Set true");
+        {  
             PlayerPrefs.SetInt("IsHandtracking", 1);
-            
-            //ToggleGameobject.GetComponent<Toggle>().isOn = true;
         }
     }
 

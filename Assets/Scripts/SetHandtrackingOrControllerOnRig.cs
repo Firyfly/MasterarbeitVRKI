@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Sets the Hand Tracking or Controller on the rig
+//-----------------------------------------
+
 public class SetHandtrackingOrControllerOnRig : MonoBehaviour
 {
-
 
     [SerializeField]
     private GameObject rightHand;
@@ -14,7 +17,6 @@ public class SetHandtrackingOrControllerOnRig : MonoBehaviour
     private GameObject rightController;
     [SerializeField]
     private GameObject leftController;
-
 
     // Start is called before the first frame update
     void Start()
@@ -35,10 +37,5 @@ public class SetHandtrackingOrControllerOnRig : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
 

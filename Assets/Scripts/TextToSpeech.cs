@@ -8,33 +8,37 @@ using Amazon.Runtime;
 using UnityEngine;
 using UnityEngine.Networking;
 
+//-----------------------------------------
+//Text to speech Script with amazon polly
+//-----------------------------------------
+
 public class TextToSpeech : MonoBehaviour
 {
 
     [SerializeField]
     private AudioSource audioSource;
-
     public string text2SpeechMessage;
+    public VoiceId voiceID = VoiceId.Daniel;
 
-    // Start is called before the first frame update
     public async Task T2SResponse()
     {
-        var credentials = new BasicAWSCredentials("AKIA2UH6HQ3CWJFMY3ME", "5comNcoI+dt+NtRgbPKSQ2vgeWcxvqSbCO5i7n5X");
+        var credentials = new BasicAWSCredentials("YourAcceessKey", "YourSecretKey");
         var client = new AmazonPollyClient(credentials,Amazon.RegionEndpoint.EUCentral1);
 
+        //Creates the request
         var request = new SynthesizeSpeechRequest()
         {
             Text = text2SpeechMessage,
             LanguageCode = "de-DE",
-            Engine = Engine.Neural, //more expensive but less robotic
-            VoiceId = VoiceId.Daniel, //Vicki for female german voice capable of neural
+            Engine = Engine.Neural,  //more expensive but less robotic
+            VoiceId = voiceID,       //VoiceId.Daniel, //Vicki for female german voice capable of neural
             OutputFormat = OutputFormat.Mp3
         };
 
         var response = await client.SynthesizeSpeechAsync(request);
-
         WriteIntoFile(response.AudioStream);
 
+        //Create audioclip and play it
         using (var www = UnityWebRequestMultimedia.GetAudioClip($"{Application.persistentDataPath}/audio.mp3", AudioType.MPEG))
         {
             var op = www.SendWebRequest();

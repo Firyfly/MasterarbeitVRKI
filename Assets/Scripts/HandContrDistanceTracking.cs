@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//-----------------------------------------
+//Tracks the distance which the hands are moving
+//-----------------------------------------
+
 public class HandContrDistanceTracking : MonoBehaviour
 {
+
     [SerializeField]
     private GameObject rightHand;
     [SerializeField]
     private GameObject leftHand;
     Vector3 rightHandOldPosition;
     Vector3 leftHandOldPosition;
-
 
     [SerializeField]
     private GameObject StateManagerObject;
@@ -32,17 +36,6 @@ public class HandContrDistanceTracking : MonoBehaviour
 
     private float calibrationDistance;
 
-
-    /* Durchschnitt bei durchgängiger bewegung ist 0.5 bis 1.5 manchmal drüber bis 2.0
-     * Für das Feedback, unterscheiden zwischen wenn personalleiter reden und wenn benutzer redet.
-     * Etwas alles runter schrauben vom durchschnitt, da nicht immer bewegt wird. 
-     * vllt so zwischen 0.2/0.3 und 0.7 durchschnitt für gut? Drunter schlechter, drüber schlechter
-     * Bei manager talking sollte es weniger sein
-     */
-
-
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -59,19 +52,20 @@ public class HandContrDistanceTracking : MonoBehaviour
     {
         if (!hasStarted)
         {
+            //Check if gamestate changed, if yes, start tracking
             if (stateManager.currentGamestate != oldGamestate)
             {
                 //Should Always be the case
-                //if (stateManager.currentGamestate == StateManager.Gamestate.ManagerTalking) { }
                 hasStarted = true;
                 oldGamestate = stateManager.currentGamestate;
             }
         }
         else if (hasStarted)
         {
+            //each change of the state, safe the data in the big list of the generalaverage collection
             if (stateManager.currentGamestate != oldGamestate)
             {
-                //Clear the sec list and so on and write in the general avrg
+                //Clear the sec list  and write in the general avrg
                 timerforSec = 1.0f;
                 if (RightPhaseInSecCollection.Count != 0) 
                 {
@@ -101,6 +95,7 @@ public class HandContrDistanceTracking : MonoBehaviour
                 oldGamestate = stateManager.currentGamestate;
             }
 
+            //Get the movement data in each second
             if(timerforSec >= 0.0f)
             {
                 timerforSec -= Time.deltaTime * 1;
@@ -112,6 +107,7 @@ public class HandContrDistanceTracking : MonoBehaviour
                 leftHandOldPosition = leftHand.transform.position;
                 LeftPhaseInSecCollection.Add(distanceLeft*100);
             }
+            //Get the Data after each second and compile into 1 value
             else
             {
                 timerforSec = 1.0f;
@@ -135,8 +131,7 @@ public class HandContrDistanceTracking : MonoBehaviour
                 LeftPhaseInSecCollection.Clear();
 
             }
-
         }
-
     }
+
 }

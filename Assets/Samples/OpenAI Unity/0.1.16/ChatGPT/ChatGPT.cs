@@ -15,7 +15,7 @@ namespace OpenAI
         [SerializeField] private RectTransform received;
 
         private float height;
-        private OpenAIApi openai = new OpenAIApi();
+        private OpenAIApi openai = new OpenAIApi("YourApiKey", "YourOrganizationID");
 
         public List<ChatMessage> messages = new List<ChatMessage>();
         private string prompt = "Versetze dich in die Rolle eines Personalmanagers aus der IT Branche mit dem Namen Max und führe ein Jobinterview durch. Benutze dabei nie mehr als 250 Zeichen in einer Nachricht";//"Act as a random stranger in a chat room and reply to the questions. Don't break character. Don't ever mention that you are an AI model.";
@@ -42,6 +42,9 @@ namespace OpenAI
 
         public async Task SendReply()
         {
+
+
+
             var newMessage = new ChatMessage()
             {
                 Role = "user",
@@ -57,7 +60,7 @@ namespace OpenAI
             button.enabled = false;
             inputField.text = "";
             inputField.enabled = false;
-            
+
             // Complete the instruction
             var completionResponse = await openai.CreateChatCompletion(new CreateChatCompletionRequest()
             {
@@ -78,6 +81,8 @@ namespace OpenAI
             {
                 Debug.LogWarning("No text was generated from this prompt.");
             }
+
+
 
             button.enabled = true;
             inputField.enabled = true;

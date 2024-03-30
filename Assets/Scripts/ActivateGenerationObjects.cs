@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+//-----------------------------------------
+//Objects for the Scenegeneration. Only here to be used by other Scripts.
+//-----------------------------------------
+
 public class ActivateGenerationObjects : MonoBehaviour
 {
-
-
+    
     public GameObject GoldTrophy;
     public GameObject SilverTrophy;
     public GameObject BronzeTrophy;
@@ -22,15 +25,4 @@ public class ActivateGenerationObjects : MonoBehaviour
 
     public TMP_Text tmpGPTText;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

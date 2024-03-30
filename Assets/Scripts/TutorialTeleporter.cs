@@ -3,21 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//-----------------------------------------
+//Teleports to the tutorials and back
+//-----------------------------------------
+
 public class TutorialTeleporter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
+  
     public void TeleportBackToMainMenu()
     {
         SceneManager.LoadScene(0, LoadSceneMode.Single);

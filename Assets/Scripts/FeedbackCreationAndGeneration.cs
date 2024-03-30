@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+//-----------------------------------------
+//Generates the Feedback from the collected Data
+//-----------------------------------------
+
 public class FeedbackCreationAndGeneration : MonoBehaviour
 {
-
-
 
     private ActivateGenerationObjects generationObjects;
 
@@ -28,36 +30,22 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
 
     public string chatGPTAnswer;
 
-    // Start is called before the first frame update
+    //Makes the Object not destroy during scene change
     void Start()
     {
-
-        
-
         DontDestroyOnLoad(this.gameObject);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
+    //Generates the Feedback
     public void GenerateFeedback()
     {
-
+        //Get the Objects from changed Scene
         generationObjects = GameObject.Find("GenerationObjects").GetComponent<ActivateGenerationObjects>();
 
-        Debug.Log(generationObjects.SpeechPosition.position);
-        Debug.Log(generationObjects.SentimentPosition.position);
-        Debug.Log(generationObjects.HandMovementPosition.position);
-
-
-        //Sprache
+        //Speech Generation
         if (loudness1 + loudness5 <= 2)
         {
-            //im normalen und guten bereich, silber
+            //Silver
             if(loudness2 >= loudness3)
             {
                 loudnessText = "Die Stimmlautstärke war verständlich und eine Kommunikation zu führen war möglich. Versuchen sie ein kleines bisschen lauter zu sprechen, dann kommen sie noch selbstbewusster rüber!";
@@ -70,9 +58,9 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
                 GameObject InstantiatedObject = Instantiate(generationObjects.SilverTrophy, generationObjects.SpeechPosition);
                 InstantiatedObject.transform.position = generationObjects.SpeechPosition.position;
             }
+            //Gold
             else
             {
-                //Perfekt, gold
                 loudnessText = "Sehr gut! Sie haben deutlich und verständlich gesprochen. Genauso weiter!";
                 GameObject InstantiatedObject = Instantiate(generationObjects.GoldTrophy, generationObjects.SpeechPosition);
                 InstantiatedObject.transform.position = generationObjects.SpeechPosition.position;
@@ -80,7 +68,7 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
         }
         else
         {
-            //Schlecht, bronze
+            //Bronze
             if (loudness1 > 2 && loudness5 > 2)
             {
                 loudnessText = "Die Sprachlautstärke war mehrmals zu laut und zu leise, passen sie auf ihre Stimmlautstärke konsistent zu halten und einen Mittelwert zu finden!";
@@ -107,7 +95,7 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
         //Sentiment
         if(sentimentNegative >= 2)
         {
-            //schlecht bronze
+            //Bronze
             sentimentText = "Sie haben mehrmals mit deutlich erkennbarer negativer Stimmung geantwortet, dies gibt den Bewerbungsleitern ein schlechtes Bild. Versuchen sie deutlich positivere Sätze zu bilden.";
             GameObject InstantiatedObject = Instantiate(generationObjects.BronzeTrophy, generationObjects.SentimentPosition);
             InstantiatedObject.transform.position = generationObjects.SentimentPosition.position;
@@ -116,14 +104,14 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
         {
             if(sentimentPositive >= 5)
             {
-                //Gut gold
+                //Gold
                 sentimentText = "Sie haben in dem Jobinterview eine gute positive Stimmung rübergebracht. Behalten sie dies bei!";
                 GameObject InstantiatedObject = Instantiate(generationObjects.GoldTrophy, generationObjects.SentimentPosition);
                 InstantiatedObject.transform.position = generationObjects.SentimentPosition.position;
             }
             else
             {
-                //Mittel Silber
+                //Silver
                 sentimentText = "Sie haben mehrfach mit sehr neutraler Stimmung geantwortet. Während dies nicht direkt negativ ist, überbringt dies das Gefühl von Desinteresse. Versuchen sie ihre positivität etwas mehr zu zeigen.";
                 GameObject InstantiatedObject = Instantiate(generationObjects.SilverTrophy, generationObjects.SentimentPosition);
                 InstantiatedObject.transform.position = generationObjects.SentimentPosition.position;
@@ -131,18 +119,17 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
         }
         generationObjects.tmpSentimentText.text = sentimentText;
 
-
-        //Handbewegung und Körperhaltung etc
-
-        if(averageHandMovementWhenOwnTurn <= 0.2f)//Schlecht
+        //Hand Movement
+        if(averageHandMovementWhenOwnTurn <= 0.2f)
         {
-
+            //Bronze
             if(averageHandMovementWhenSuperviserTurn >= 0.2f)
             {
                 handMovementText = "Die eigenen Handbewegungen sollten etwas mehr zum eigenen Vorteil genutzt werden beim Sprechen, und weniger wenn die andere Person spricht";
                 GameObject InstantiatedObject = Instantiate(generationObjects.BronzeTrophy, generationObjects.HandMovementPosition);//Ganz schlecht
                 InstantiatedObject.transform.position = generationObjects.HandMovementPosition.position;
             }
+            //Silver
             else
             {
                 handMovementText = "Die eigenen Handbewegungen sollten etwas mehr zum eigenen Vorteil genutzt werden beim Sprechen.";
@@ -151,14 +138,16 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
             }
 
         }
-        else if(averageHandMovementWhenOwnTurn >= 0.7f)//Schlecht
+        else if(averageHandMovementWhenOwnTurn >= 0.7f)
         {
+            //Bronze
             if (averageHandMovementWhenSuperviserTurn >= 0.2f)
             {
                 handMovementText = "Die eigenen Handbewegungen sollten ruhiger und langsamer werden, vor allem wenn andere Personen sprechen. ";
                 GameObject InstantiatedObject = Instantiate(generationObjects.BronzeTrophy, generationObjects.HandMovementPosition);//Ganz schlecht
                 InstantiatedObject.transform.position = generationObjects.HandMovementPosition.position;
             }
+            //Silver
             else
             {
                 handMovementText = "Die eigenen Handbewegungen sollten ruhiger und langsamer werden.";
@@ -166,14 +155,16 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
                 InstantiatedObject.transform.position = generationObjects.HandMovementPosition.position;
             }
         }
-        else//Gut
+        else
         {
+            //Silver
             if (averageHandMovementWhenSuperviserTurn >= 0.2f)
             {
                 handMovementText = "Die eigenen Handbewegungen haben das gesagte unterstrichen, jedoch sollten diese unterbunden werden, wenn die andere Person spricht.";
                 GameObject InstantiatedObject = Instantiate(generationObjects.SilverTrophy, generationObjects.HandMovementPosition);
                 InstantiatedObject.transform.position = generationObjects.HandMovementPosition.position;
             }
+            //Gold
             else
             {
                 handMovementText = "Super. Die eigenen Handbewegungen waren passend und wenn die andere Person gesprochen hat wurde zugehört. Weiter so!";
@@ -184,30 +175,8 @@ public class FeedbackCreationAndGeneration : MonoBehaviour
 
         generationObjects.tmpHandMovementText.text = handMovementText;
 
-
-        //"eyetracking"
-
-
-
-
-
-        //GPT Rückmeldung
-
+        //ChatGPT Feedback
         generationObjects.tmpGPTText.text = chatGPTAnswer;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 }

@@ -7,6 +7,10 @@ using Amazon.Runtime;
 using Amazon.Comprehend;
 using System.IO;
 
+//-----------------------------------------
+//The Manager which guides the whole simulation Loop
+//-----------------------------------------
+
 public class GameplayLoopManager : MonoBehaviour
 {
 
@@ -15,8 +19,13 @@ public class GameplayLoopManager : MonoBehaviour
     [SerializeField]
     private Material buttonGreen;
 
+    public Material blueButton;
+
+
     [SerializeField]
-    private GameObject buttonTop;
+    public GameObject buttonTop;
+    [SerializeField]
+    private GameObject buttonTutorial;
 
     [SerializeField]
     GameObject whisperGameobject;
@@ -51,18 +60,11 @@ public class GameplayLoopManager : MonoBehaviour
     private HandContrDistanceTracking handContrDistanceTracking;
 
     private float loudness;
-    private int round = 1;
+    private int round = 8;
 
-    // Start is called before the first frame update
+    //Gets and instantiates all the needed Components and Gameobjects / Scripts in the variables
     void Start()
     {
-
-        //GetSentiment("Ein wundervolles Produkt!");
-        //GetSentiment("Eine sehr schlechte Idee, das mag ich gar nicht.");
-        //GetSentiment("Naja, ich habe kaum Erfahrung in dem Feld, eher in anderen Bereichen.");
-        //GetSentiment("Ja ich kenne mich in diesem Bereich bereits gut aus und habe Erfahrungen");
-
-        
         whisper = whisperGameobject.GetComponent<OpenAI.Whisper>();
         textToSpeech = T2SGameobject.GetComponent<TextToSpeech>();
         chatGPT = ChatGPTGameobject.GetComponent<OpenAI.ChatGPT>();
@@ -77,31 +79,26 @@ public class GameplayLoopManager : MonoBehaviour
         stateManager = StateManagerGameobject.GetComponent<StateManager>();
 
         chatGPT.messages.Clear();
-
+        
         StartLoop();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-
-    }
-
+    //Decentralized Function to Get the Loudness
     public void GetLoudnessFromMicrophone(AudioClip clip)
     {   
-        // < 0.7 viel zu leise
-        // < 0.9 Zu leise
-        // < 1.3 ziemlich gut
-        // < 1.5 deutlich aber nicht lauter
-        // > 1.5 zu laut
+        // < 0.7 Way too quiet
+        // < 0.9 quiet
+        // < 1.3 good
+        // < 1.5 good, just a bit loud
+        // > 1.5 too loud
         loudness = this.GetComponent<MeasureLoudness>().GetLoudnessFromAudioClip(clip);     
     }
 
-    //TODO: Outspource Own script
+    //Decentralized Function to Get the Sentiment
     public string GetSentiment(string review)
     {
         string result = this.GetComponent<SentimentAnalysis>().GetSentimentFromString(review);
+        //Set results for feedback
         if(result == "POSITIVE")
         {
             feedbackCreationAndGeneration.sentimentPositive += 1;
@@ -122,38 +119,34 @@ public class GameplayLoopManager : MonoBehaviour
         return result;
     }
 
-    public async Task StartLoop() //ChatGPT Answer and Text2Speech
+    //Starts the loop, which includes ChatGPT and TextToSpeech
+    public async Task StartLoop()
     {
-
         buttonTop.GetComponent<Renderer>().material = buttonRed;
-
+        
+        //Depending on the Round set ai Gapfillers
         switch (round)
         {
             case 2:
                 int rand = Random.Range(1, aiGapFillers.introductionGapFillers.Count);
                 textToSpeech.text2SpeechMessage = aiGapFillers.introductionGapFillers[rand];
                 await textToSpeech.T2SResponse();
-                
                 break;
 
             case >2 and <11:
                 int rand2 = Random.Range(1, aiGapFillers.talkingGapFillers.Count);
                 textToSpeech.text2SpeechMessage = aiGapFillers.talkingGapFillers[rand2];
                 await textToSpeech.T2SResponse();
-
-                break;
-
-            case 11:    //Nicht erreichbar, da die
-
                 break;
         }
 
+        //If its not the End, go into the next loop
         if(round <= 11)
         {
-
-            stateManager.currentGamestate = StateManager.Gamestate.ManagerTalking;
             
-            //Entweder begrüßungs gap fillers oder das andere
+            stateManager.currentGamestate = StateManager.Gamestate.ManagerTalking;
+
+            //ChatGPT and T2S with Animations
             chatGPT.inputField.text = gptMessage;
             await chatGPT.SendReply();
             textToSpeech.text2SpeechMessage = chatGPT.gptAnswer;
@@ -162,18 +155,18 @@ public class GameplayLoopManager : MonoBehaviour
             while (T2SGameobject.GetComponent<AudioSource>().isPlaying) await Task.Yield();
             supervisorAnimations.isTalking = false;
             supervisorAnimations.StopTalking();
-            
 
+            //Starts the S2T Recording, which in its function starts the EndLoop Function
             whisper.StartRecording();
-
             buttonTop.GetComponent<Renderer>().material = buttonGreen;
+            buttonTutorial.SetActive(true);
 
             stateManager.currentGamestate = StateManager.Gamestate.ApplicantTalking;
 
         }
         else
         {
-
+            //If the simulation ended, get the Feedback from ChatGPT
             gptMessage = "Bitte gebe nun eine Bewertung des Interviews ab und beziehe dich vor allem auf den Konversationskontext.";
             chatGPT.inputField.text = gptMessage;
             await chatGPT.SendReply();
@@ -182,22 +175,12 @@ public class GameplayLoopManager : MonoBehaviour
 
             this.GetComponent<SwitchScenes>().ChangeScene();
         }
-
-
-
     }
 
+    //The End of the simulation Loop, gathering all the information and preparing the Data / next message
     public void EndLoop()
     {
-
-        //loudness
-        //Sentiment
-        //message
-        //Wie weiter geht
-
-        //TODO:
-        //Handbewegung
-
+        //Sets the loudness for chatGPT text
         string loudnessText;
         switch (loudness)
         {
@@ -232,6 +215,7 @@ public class GameplayLoopManager : MonoBehaviour
                 break;
         }
 
+        //Sets the prompt topic for the next message
         string roundText;
         switch (round)
         {
@@ -279,28 +263,19 @@ public class GameplayLoopManager : MonoBehaviour
                 roundText = "Führe das Interview nun mit dem Themengebiet Erfahrungen im IT Bereich weiter durch.";
                 break;
         }
-        
 
-        gptMessage = "Der Bewerber hat folgende Antwort gegeben \"" + Speech2TextMessage + "\". Dabei hat er " + loudnessText + " gesporchen. Seine Stimmung war dabei "+ GetSentiment(Speech2TextMessage) + "." + roundText;
-
+        //Combine the Data in a message and start the next loop
+        gptMessage = "Der Bewerber hat folgende Antwort gegeben \"" + Speech2TextMessage +
+        "\". Dabei hat er " + loudnessText + " gesporchen. Seine Stimmung war dabei "+ GetSentiment(Speech2TextMessage) + "." + roundText;
 
         round += 1;
         StartLoop();
-
-        //if(round != 11)
-        //{
-        //    StartLoop();
-        //}
-        //else
-        //{
-        //    //Bitte gib rückmeldung und evaluation-> an chatgpt und das in feedback einbinden
-        //}
         
     }
 
+    //When scene is changing and the object gets destroyed, transfer data to FeedbackCreationAndGeneration which hasnt already transfered
     private void OnDestroy()
     {
-
         float averageOwnTurn = 0.0f;
         int ownCount = 0;
         float averageSupervisorTurn = 0.0f;
@@ -308,30 +283,25 @@ public class GameplayLoopManager : MonoBehaviour
 
         for(int i = 0; i < handContrDistanceTracking.RightGeneralAverageCollection.Count; i++)
         {
-            Debug.Log(i);
             if (i == 0)
             {
                 averageSupervisorTurn += handContrDistanceTracking.RightGeneralAverageCollection[i];
                 averageSupervisorTurn += handContrDistanceTracking.LeftGeneralAverageCollection[i];
                 supervisorCount += 2;
-                Debug.Log("Zero");
             }
             else if(i % 2 == 0)
             {
                 averageSupervisorTurn += handContrDistanceTracking.RightGeneralAverageCollection[i];
                 averageSupervisorTurn += handContrDistanceTracking.LeftGeneralAverageCollection[i];
                 supervisorCount += 2;
-                Debug.Log("right");
             }
             else
             {
                 averageOwnTurn += handContrDistanceTracking.RightGeneralAverageCollection[i];
                 averageOwnTurn += handContrDistanceTracking.LeftGeneralAverageCollection[i];
                 ownCount += 2;
-                Debug.Log("left");
             }
         }
-
 
         feedbackCreationAndGeneration.averageHandMovementWhenOwnTurn = averageOwnTurn / ownCount;
         feedbackCreationAndGeneration.averageHandMovementWhenSuperviserTurn = averageSupervisorTurn / supervisorCount;
